@@ -1,0 +1,6 @@
+.venv/
+dist/
+/use-python-private-package
+.env
+.env.*
+!.env.example
