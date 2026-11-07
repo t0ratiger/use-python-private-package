@@ -1,11 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.25-bookworm AS go-build
+FROM --platform=$BUILDPLATFORM golang:1.25-bookworm AS go-build
+ARG TARGETOS
+ARG TARGETARCH
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY main.go config.go ./
-RUN CGO_ENABLED=0 go build -trimpath -o /out/app .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -o /out/app .
 
 FROM python:3.13-slim-bookworm AS python-install
 

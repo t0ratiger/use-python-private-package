@@ -87,7 +87,9 @@ docker run --rm -e PYTHON_CLI_TIMEOUT=1m use-python-private-package -rows 100
 
 `v*` のフォーマットでタグ作ってリリースを生やすと、image をビルドし、リリースの Assets にイメージを添付する
 
-workflowはタグが指すコミットのコードを `linux/amd64` 向けにビルドします。
+workflowはタグが指すコミットのコードをビルドします。
+Goはビルド環境のCPU上でクロスコンパイルし、Pythonのvenvは対象CPUのイメージ上で作成します。
+GHAではARM64のPython環境の準備にQEMUを使います。
 成功するとイメージを `.tar.gz` に保存し、SHA-256チェックサムと一緒に既存のReleaseのAssetsへ添付します。
 Releaseのタイトル・本文・Pre-release設定は変更しません。
 失敗時はActions画面から再実行できます。同名のAssetsがある場合は置き換えます。
@@ -95,7 +97,7 @@ Releaseのタイトル・本文・Pre-release設定は変更しません。
 別リポジトリの非公開Releaseを取得する場合は、 `PYTHON_PACKAGE_TOKEN` を登録します。
 対象のPythonリポジトリを読めるPATまたはGitHub Appのトークンを指定してください。
 
-ReleaseのAssetsから `use-python-private-package-linux-amd64.tar.gz` をダウンロードして使えます。
+ReleaseのAssetsから、使う環境に合わせてダウンロードします。
 
 ```sh
 docker load -i use-python-private-package-linux-amd64.tar.gz
