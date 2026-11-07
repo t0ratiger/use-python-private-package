@@ -83,6 +83,25 @@ GH_TOKEN="$(gh auth token)" docker build \
 docker run --rm -e PYTHON_CLI_TIMEOUT=1m use-python-private-package -rows 100
 ```
 
+## GitHub Releaseへのイメージ保存
+
+`v*` のフォーマットでタグ作ってリリースを生やすと、image をビルドし、リリースの Assets にイメージを添付する
+
+workflowはタグが指すコミットのコードを `linux/amd64` 向けにビルドします。
+成功するとイメージを `.tar.gz` に保存し、SHA-256チェックサムと一緒に既存のReleaseのAssetsへ添付します。
+Releaseのタイトル・本文・Pre-release設定は変更しません。
+失敗時はActions画面から再実行できます。同名のAssetsがある場合は置き換えます。
+
+別リポジトリの非公開Releaseを取得する場合は、 `PYTHON_PACKAGE_TOKEN` を登録します。
+対象のPythonリポジトリを読めるPATまたはGitHub Appのトークンを指定してください。
+
+ReleaseのAssetsから `use-python-private-package-linux-amd64.tar.gz` をダウンロードして使えます。
+
+```sh
+docker load -i use-python-private-package-linux-amd64.tar.gz
+docker run --rm --platform linux/amd64 use-python-private-package:v0.1.0-poc -rows 100
+```
+
 ## 検証
 
 ```sh
