@@ -54,6 +54,35 @@ PYTHON_CLI_TIMEOUT=1m \
 go run . -rows 100
 ```
 
+## Dockerでの実行
+
+`gh release download` でGitHub Releaseのwheelを取得してビルドする
+
+バージョンはDockerfileの `ARG PYTHON_PACKAGE_TAG=v3` で管理します。
+CLIの更新時はこの値を変更してイメージを再ビルドします。
+
+BuildKit対応のDockerが必要です。
+この構成では公開・非公開どちらのReleaseでも、GitHubトークンをBuildKit secretとして渡します。
+Fine-grained PATでは対象リポジトリの Contents: Read 権限を指定します。
+
+別リポジトリのprivate Releaseには、このリポジトリの `GITHUB_TOKEN` だけでは
+通常アクセスできないため、PATまたはGitHub Appのトークンを用意してください。
+
+別のReleaseを一時的に試す場合は、ビルド引数で上書きできます。
+
+```sh
+GH_TOKEN="$(gh auth token)" docker build \
+  --secret id=github_token,env=GH_TOKEN \
+  --build-arg PYTHON_PACKAGE_TAG=v2 \
+  -t use-python-private-package:v2 .
+```
+
+タイムアウトは実行時に変更できます。
+
+```sh
+docker run --rm -e PYTHON_CLI_TIMEOUT=1m use-python-private-package -rows 100
+```
+
 ## 検証
 
 ```sh
